@@ -1,5 +1,5 @@
-// Feel free to write and use any additional functions, variables, objects, etc. as you wish
 const intitialLookup = {
+  //A does not have access to C or G for example, because B and D block.
   A: new Set(["B", "D", "E", "F", "H"]),
   B: new Set(["A", "C", "D", "E", "F", "G", "I"]),
   C: new Set(["B", "D", "E", "F", "H"]),
@@ -12,6 +12,7 @@ const intitialLookup = {
 };
 
 const genNextSquares = (lookup, fromSquare) => {
+  //if a blocking square has already been accessed and removed, open up the squares that were blocked
   if (!lookup["B"]) {
     lookup["A"] && lookup["C"] && lookup["A"].add("C");
     lookup["C"] && lookup["A"] && lookup["C"].add("A");
@@ -38,7 +39,7 @@ const genNextSquares = (lookup, fromSquare) => {
     lookup["G"] && lookup["I"] && lookup["G"].add("I");
     lookup["I"] && lookup["G"] && lookup["I"].add("G");
   }
-
+  //create a new lookup, that doesn't include the visited square anywhere
   const nextSquares = [...lookup[fromSquare]].sort();
   const newLookup = {};
   for (const key in lookup) {
@@ -62,12 +63,15 @@ const recursivelyCreatePermutations = (
   patterns,
   length
 ) => {
+  //add each nextSquare to the current string eg. AB + C
   for (let i = 0; i < nextSquares.length; i++) {
     newPattStr = currPattStr + nextSquares[i];
     newPattLength = currPattLength + 1;
     if (newPattLength === length) {
+      //you've found a pattern of the desired length
       patterns.push(newPattStr);
     } else {
+      //seek to increase the pattern further by adding available squares
       const [newNextSquares, newLookup] = genNextSquares(
         lookup,
         nextSquares[i]
@@ -82,17 +86,17 @@ const recursivelyCreatePermutations = (
       );
     }
   }
+  //once the above for loop has no more squares to iterate through, the recursive element stops
 };
 
 function countPatternsFrom(firstPoint, length) {
-  // console.log(`Starting at ${firstPoint}`);
   if (!length || length > 9) return 0;
   if (length === 1) return 1;
 
   const patterns = [];
   const [nextSquares, newLookup] = genNextSquares(intitialLookup, firstPoint);
-  let currPattLength = 1;
-  let currPattStr = firstPoint;
+  let currPattLength = 1; //All patterns have at least one letter eg. E
+  let currPattStr = firstPoint; //All patterns must start with the given letter eg. E
   recursivelyCreatePermutations(
     currPattLength,
     currPattStr,
@@ -101,9 +105,7 @@ function countPatternsFrom(firstPoint, length) {
     patterns,
     length
   );
-  console.log(patterns, "any dupes?");
-  const uniquePatterns = [...new Set(patterns)];
-  return uniquePatterns.length;
+  return patterns.length;
 }
 
 module.exports = {
