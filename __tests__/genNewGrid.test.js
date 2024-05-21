@@ -172,6 +172,58 @@ describe("genNextSquares", () => {
       H: ["A", "C", "D", "E", "F", "G"],
     });
   });
+  test("hidden squares are included if blocking squares have already been accessed", () => {
+    const partialLookup1 = {
+      A: ["D", "E", "H"],
+      C: ["D", "E", "H"],
+      D: ["A", "C", "E", "G", "H", "I"],
+      E: ["A", "C", "D", "H", "I"],
+      G: ["D", "E", "H"],
+      H: ["A", "C", "D", "E", "G", "I"],
+      I: ["D", "E", "H"],
+    };
+    expect(genNextSquares(partialLookup1, "C")[0]).toEqual([
+      "A",
+      "D",
+      "E",
+      "H",
+      "I",
+    ]);
+    const partialLookup2 = {
+      B: ["C", "D", "F", "G", "I"],
+      C: ["B", "D", "F", "H"],
+      D: ["B", "C", "G", "H", "I"],
+      F: ["B", "C", "G", "H", "I"],
+      G: ["B", "D", "F", "H"],
+      H: ["C", "D", "F", "G", "I"],
+      I: ["B", "D", "F", "H"],
+    };
+    expect(genNextSquares(partialLookup2, "D")[0]).toEqual([
+      "B",
+      "C",
+      "F",
+      "G",
+      "H",
+      "I",
+    ]);
+  });
+  test("hidden squares are not included if they have previously been accessed", () => {
+    const partialLookup1 = {
+      A: ["D", "H"],
+      C: ["D", "H"],
+      D: ["A", "C", "G", "H", "I"],
+      G: ["D", "H"],
+      H: ["A", "C", "D", "G", "I"],
+      I: ["D", "H"],
+    };
+    expect(genNextSquares(partialLookup1, "H")[0]).toEqual([
+      "A",
+      "C",
+      "D",
+      "G",
+      "I",
+    ]);
+  });
 });
 
 describe("countPatternsFrom", () => {
