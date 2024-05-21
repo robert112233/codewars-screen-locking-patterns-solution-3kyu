@@ -1,52 +1,52 @@
 // Feel free to write and use any additional functions, variables, objects, etc. as you wish
 const intitialLookup = {
-  A: ["B", "D", "E", "F", "H"],
-  B: ["A", "C", "D", "E", "F", "G", "I"],
-  C: ["B", "D", "E", "F", "H"],
-  D: ["A", "B", "C", "E", "G", "H", "I"],
-  E: ["A", "B", "C", "D", "F", "G", "H", "I"],
-  F: ["A", "B", "C", "E", "G", "H", "I"],
-  G: ["B", "D", "E", "F", "H"],
-  H: ["A", "C", "D", "E", "F", "G", "I"],
-  I: ["B", "D", "E", "F", "H"],
+  A: new Set(["B", "D", "E", "F", "H"]),
+  B: new Set(["A", "C", "D", "E", "F", "G", "I"]),
+  C: new Set(["B", "D", "E", "F", "H"]),
+  D: new Set(["A", "B", "C", "E", "G", "H", "I"]),
+  E: new Set(["A", "B", "C", "D", "F", "G", "H", "I"]),
+  F: new Set(["A", "B", "C", "E", "G", "H", "I"]),
+  G: new Set(["B", "D", "E", "F", "H"]),
+  H: new Set(["A", "C", "D", "E", "F", "G", "I"]),
+  I: new Set(["B", "D", "E", "F", "H"]),
 };
 
 const genNextSquares = (lookup, fromSquare) => {
   if (!lookup["B"]) {
-    lookup["A"] && lookup["C"] && lookup["A"].push("C");
-    lookup["C"] && lookup["A"] && lookup["C"].push("A");
+    lookup["A"] && lookup["C"] && lookup["A"].add("C");
+    lookup["C"] && lookup["A"] && lookup["C"].add("A");
   }
   if (!lookup["D"]) {
-    lookup["A"] && lookup["G"] && lookup["A"].push("G");
-    lookup["G"] && lookup["A"] && lookup["G"].push("A");
+    lookup["A"] && lookup["G"] && lookup["A"].add("G");
+    lookup["G"] && lookup["A"] && lookup["G"].add("A");
   }
   if (!lookup["E"]) {
-    lookup["A"] && lookup["I"] && lookup["A"].push("I");
-    lookup["I"] && lookup["A"] && lookup["I"].push("A");
-    lookup["B"] && lookup["H"] && lookup["B"].push("H");
-    lookup["H"] && lookup["B"] && lookup["H"].push("B");
-    lookup["C"] && lookup["G"] && lookup["C"].push("G");
-    lookup["G"] && lookup["C"] && lookup["G"].push("C");
-    lookup["D"] && lookup["F"] && lookup["D"].push("F");
-    lookup["F"] && lookup["D"] && lookup["F"].push("D");
+    lookup["A"] && lookup["I"] && lookup["A"].add("I");
+    lookup["I"] && lookup["A"] && lookup["I"].add("A");
+    lookup["B"] && lookup["H"] && lookup["B"].add("H");
+    lookup["H"] && lookup["B"] && lookup["H"].add("B");
+    lookup["C"] && lookup["G"] && lookup["C"].add("G");
+    lookup["G"] && lookup["C"] && lookup["G"].add("C");
+    lookup["D"] && lookup["F"] && lookup["D"].add("F");
+    lookup["F"] && lookup["D"] && lookup["F"].add("D");
   }
   if (!lookup["F"]) {
-    lookup["C"] && lookup["I"] && lookup["C"].push("I");
-    lookup["I"] && lookup["C"] && lookup["I"].push("C");
+    lookup["C"] && lookup["I"] && lookup["C"].add("I");
+    lookup["I"] && lookup["C"] && lookup["I"].add("C");
   }
   if (!lookup["H"]) {
-    lookup["G"] && lookup["I"] && lookup["G"].push("I");
-    lookup["I"] && lookup["G"] && lookup["I"].push("G");
+    lookup["G"] && lookup["I"] && lookup["G"].add("I");
+    lookup["I"] && lookup["G"] && lookup["I"].add("G");
   }
 
-  const nextSquares = lookup[fromSquare].sort();
+  const nextSquares = [...lookup[fromSquare]].sort();
   const newLookup = {};
   for (const key in lookup) {
     if (key !== fromSquare) {
-      newLookup[key] = [];
+      newLookup[key] = new Set([]);
       for (const square of lookup[key]) {
         if (square !== fromSquare) {
-          newLookup[key].push(square);
+          newLookup[key].add(square);
         }
       }
     }
