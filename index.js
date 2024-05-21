@@ -4,7 +4,7 @@ const intitialLookup = {
   B: ["A", "C", "D", "E", "F", "G", "I"],
   C: ["B", "D", "E", "F", "H"],
   D: ["A", "B", "C", "E", "G", "H", "I"],
-  E: ["A", "B", "C", "D", "F", "H", "I"],
+  E: ["A", "B", "C", "D", "F", "G", "H", "I"],
   F: ["A", "B", "C", "E", "G", "H", "I"],
   G: ["B", "D", "E", "F", "H"],
   H: ["A", "C", "D", "E", "F", "G", "I"],
@@ -13,12 +13,12 @@ const intitialLookup = {
 
 const genNextSquares = (lookup, fromSquare) => {
   if (!lookup["B"]) {
-    lookup["A"].push("C");
-    lookup["C"].push("A");
+    lookup["A"] && lookup["C"] && lookup["A"].push("C");
+    lookup["C"] && lookup["A"] && lookup["C"].push("A");
   }
   if (!lookup["D"]) {
-    lookup["A"].push("G");
-    lookup["G"].push("A");
+    lookup["A"] && lookup["G"] && lookup["A"].push("G");
+    lookup["G"] && lookup["A"] && lookup["G"].push("A");
   }
   if (!lookup["E"]) {
     lookup["A"] && lookup["I"] && lookup["A"].push("I");
@@ -31,12 +31,12 @@ const genNextSquares = (lookup, fromSquare) => {
     lookup["F"] && lookup["D"] && lookup["F"].push("D");
   }
   if (!lookup["F"]) {
-    lookup["C"].push("I");
-    lookup["I"].push("C");
+    lookup["C"] && lookup["I"] && lookup["C"].push("I");
+    lookup["I"] && lookup["C"] && lookup["I"].push("C");
   }
   if (!lookup["H"]) {
-    lookup["G"].push("I");
-    lookup["I"].push("G");
+    lookup["G"] && lookup["I"] && lookup["G"].push("I");
+    lookup["I"] && lookup["G"] && lookup["I"].push("G");
   }
 
   const nextSquares = lookup[fromSquare].sort();
@@ -54,8 +54,40 @@ const genNextSquares = (lookup, fromSquare) => {
   return [nextSquares, newLookup];
 };
 
+const recursivelyCreatePermutations = (
+  currPattLength,
+  currPattStr,
+  nextSquares,
+  lookup,
+  patterns,
+  length
+) => {
+  for (let i = 0; i < nextSquares.length; i++) {
+    newPattStr = currPattStr + nextSquares[i];
+    newPattLength = currPattLength + 1;
+    // console.log(newPattStr);
+    if (newPattLength === length) {
+      patterns.push(newPattStr);
+    } else {
+      const [newNextSquares, newLookup] = genNextSquares(
+        lookup,
+        nextSquares[i]
+      );
+      // console.log(newNextSquares, "newNextSquares", newLookup, "new lookup");
+      recursivelyCreatePermutations(
+        newPattLength,
+        newPattStr,
+        newNextSquares,
+        newLookup,
+        patterns,
+        length
+      );
+    }
+  }
+};
+
 function countPatternsFrom(firstPoint, length) {
-  console.log(`Starting at ${firstPoint}`);
+  // console.log(`Starting at ${firstPoint}`);
   if (!length || length > 9) return 0;
   if (length === 1) return 1;
 
@@ -63,39 +95,24 @@ function countPatternsFrom(firstPoint, length) {
   const [nextSquares, newLookup] = genNextSquares(intitialLookup, firstPoint);
   let currPattLength = 1;
   let currPattStr = firstPoint;
-  const recursivelyCreatePermutations = (
-    currPattLength,
-    currPattStr,
-    nextSquares,
-    lookup
-  ) => {
-    for (let i = 0; i < nextSquares.length; i++) {
-      newPattStr = currPattStr + nextSquares[i];
-      newPattLength = currPattLength + 1;
-      console.log(newPattStr, newPattLength);
-      if (newPattLength === length) {
-        patterns.push(newPattStr);
-      } else {
-        const [newNextSquares, newLookup] = genNextSquares(
-          lookup,
-          nextSquares[i]
-        );
-        recursivelyCreatePermutations(
-          newPattLength,
-          newPattStr,
-          newNextSquares,
-          newLookup
-        );
-      }
-    }
-  };
   recursivelyCreatePermutations(
     currPattLength,
     currPattStr,
     nextSquares,
-    newLookup
+    newLookup,
+    patterns,
+    length
   );
-  return patterns.length;
+  const uniquePatterns = [...new Set(patterns)];
+  console.log(uniquePatterns.slice(0, uniquePatterns.length / 2 - 24));
+  console.log(uniquePatterns.slice(uniquePatterns.length / 2 - 24, -48));
+  console.log(uniquePatterns.slice(-48));
+  return [...new Set(patterns)].length;
 }
 
-module.exports = { genNextSquares, intitialLookup, countPatternsFrom };
+module.exports = {
+  genNextSquares,
+  intitialLookup,
+  countPatternsFrom,
+  recursivelyCreatePermutations,
+};

@@ -2,6 +2,7 @@ const {
   genNextSquares,
   intitialLookup,
   countPatternsFrom,
+  recursivelyCreatePermutations,
 } = require("../index");
 
 describe("genNextSquares", () => {
@@ -44,6 +45,7 @@ describe("genNextSquares", () => {
       "C",
       "D",
       "F",
+      "G",
       "H",
       "I",
     ]);
@@ -85,7 +87,7 @@ describe("genNextSquares", () => {
       B: ["C", "D", "E", "F", "G", "I"],
       C: ["B", "D", "E", "F", "H"],
       D: ["B", "C", "E", "G", "H", "I"],
-      E: ["B", "C", "D", "F", "H", "I"],
+      E: ["B", "C", "D", "F", "G", "H", "I"],
       F: ["B", "C", "E", "G", "H", "I"],
       G: ["B", "D", "E", "F", "H"],
       H: ["C", "D", "E", "F", "G", "I"],
@@ -95,7 +97,7 @@ describe("genNextSquares", () => {
       A: ["D", "E", "F", "H"],
       C: ["D", "E", "F", "H"],
       D: ["A", "C", "E", "G", "H", "I"],
-      E: ["A", "C", "D", "F", "H", "I"],
+      E: ["A", "C", "D", "F", "G", "H", "I"],
       F: ["A", "C", "E", "G", "H", "I"],
       G: ["D", "E", "F", "H"],
       H: ["A", "C", "D", "E", "F", "G", "I"],
@@ -105,7 +107,7 @@ describe("genNextSquares", () => {
       A: ["B", "D", "E", "F", "H"],
       B: ["A", "D", "E", "F", "G", "I"],
       D: ["A", "B", "E", "G", "H", "I"],
-      E: ["A", "B", "D", "F", "H", "I"],
+      E: ["A", "B", "D", "F", "G", "H", "I"],
       F: ["A", "B", "E", "G", "H", "I"],
       G: ["B", "D", "E", "F", "H"],
       H: ["A", "D", "E", "F", "G", "I"],
@@ -115,7 +117,7 @@ describe("genNextSquares", () => {
       A: ["B", "E", "F", "H"],
       B: ["A", "C", "E", "F", "G", "I"],
       C: ["B", "E", "F", "H"],
-      E: ["A", "B", "C", "F", "H", "I"],
+      E: ["A", "B", "C", "F", "G", "H", "I"],
       F: ["A", "B", "C", "E", "G", "H", "I"],
       G: ["B", "E", "F", "H"],
       H: ["A", "C", "E", "F", "G", "I"],
@@ -136,7 +138,7 @@ describe("genNextSquares", () => {
       B: ["A", "C", "D", "E", "G", "I"],
       C: ["B", "D", "E", "H"],
       D: ["A", "B", "C", "E", "G", "H", "I"],
-      E: ["A", "B", "C", "D", "H", "I"],
+      E: ["A", "B", "C", "D", "G", "H", "I"],
       G: ["B", "D", "E", "H"],
       H: ["A", "C", "D", "E", "G", "I"],
       I: ["B", "D", "E", "H"],
@@ -156,7 +158,7 @@ describe("genNextSquares", () => {
       B: ["A", "C", "D", "E", "F", "G", "I"],
       C: ["B", "D", "E", "F"],
       D: ["A", "B", "C", "E", "G", "I"],
-      E: ["A", "B", "C", "D", "F", "I"],
+      E: ["A", "B", "C", "D", "F", "G", "I"],
       F: ["A", "B", "C", "E", "G", "I"],
       G: ["B", "D", "E", "F"],
       I: ["B", "D", "E", "F"],
@@ -166,7 +168,7 @@ describe("genNextSquares", () => {
       B: ["A", "C", "D", "E", "F", "G"],
       C: ["B", "D", "E", "F", "H"],
       D: ["A", "B", "C", "E", "G", "H"],
-      E: ["A", "B", "C", "D", "F", "H"],
+      E: ["A", "B", "C", "D", "F", "G", "H"],
       F: ["A", "B", "C", "E", "G", "H"],
       G: ["B", "D", "E", "F", "H"],
       H: ["A", "C", "D", "E", "F", "G"],
@@ -223,6 +225,80 @@ describe("genNextSquares", () => {
       "G",
       "I",
     ]);
+    const partialLookup2 = {
+      B: ["C", "E", "F", "G", "I"],
+      C: ["B", "E", "F"],
+      E: ["B", "C", "F", "I"],
+      F: ["B", "C", "E", "G", "I"],
+      G: ["B", "E", "F"],
+      I: ["B", "E", "F"],
+    };
+    expect(genNextSquares(partialLookup2, "G")[0]).toEqual([
+      "B",
+      "E",
+      "F",
+      "I",
+    ]);
+  });
+  test("returned lookup table includes bridging where necessary", () => {
+    const partialLookup1 = {
+      A: ["D", "E", "H"],
+      C: ["D", "E", "H"],
+      D: ["A", "C", "E", "G", "H", "I"],
+      E: ["A", "C", "D", "H", "I"],
+      G: ["D", "E", "H"],
+      H: ["A", "C", "D", "E", "G", "I"],
+      I: ["D", "E", "H"],
+    };
+    expect(genNextSquares(partialLookup1, "C")[1]).toEqual({
+      A: ["D", "E", "H"],
+      D: ["A", "E", "G", "H", "I"],
+      E: ["A", "D", "H", "I"],
+      G: ["D", "E", "H"],
+      H: ["A", "D", "E", "G", "I"],
+      I: ["D", "E", "H"],
+    });
+    const partialLookup2 = {
+      B: ["C", "E", "F", "G", "I"],
+      C: ["B", "E", "F"],
+      E: ["B", "C", "F", "I"],
+      F: ["B", "C", "E", "G", "I"],
+      G: ["B", "E", "F"],
+      I: ["B", "E", "F"],
+    };
+    expect(genNextSquares(partialLookup2, "G")[1]).toEqual({
+      B: ["C", "E", "F", "I"],
+      C: ["B", "E", "F"],
+      E: ["B", "C", "F", "I"],
+      F: ["B", "C", "E", "I"],
+      I: ["B", "E", "F"],
+    });
+  });
+});
+
+describe("recursivelyCreatePermutations", () => {
+  test("Missing DEG string", () => {
+    const patterns = [];
+    const length = 3;
+    const nextSquares = ["A", "B", "C", "F", "G", "H", "I"];
+    const newLookup = {
+      A: ["B", "F", "H"],
+      B: ["A", "C", "F", "G", "I"],
+      C: ["B", "F", "H"],
+      F: ["A", "B", "C", "G", "H", "I"],
+      G: ["B", "F", "H"],
+      H: ["A", "C", "F", "G", "I"],
+      I: ["B", "F", "H"],
+    };
+    recursivelyCreatePermutations(
+      2,
+      "DE",
+      nextSquares,
+      newLookup,
+      patterns,
+      length
+    );
+    expect(patterns).toContain("DEG");
   });
 });
 
@@ -238,5 +314,14 @@ describe("countPatternsFrom", () => {
   });
   test("pattern length of 2 returns 5 patterns for C", () => {
     expect(countPatternsFrom("C", 2)).toBe(5);
+  });
+  test("pattern length of 3 returns 37 patterns for D", () => {
+    expect(countPatternsFrom("D", 3)).toBe(37);
+  });
+  test.only("pattern length of 4 returns 256 patterns for E", () => {
+    expect(countPatternsFrom("E", 4)).toBe(256);
+  });
+  test.skip("pattern length of 8 returns 256 patterns for E", () => {
+    expect(countPatternsFrom("E", 5)).toBe(23280);
   });
 });
