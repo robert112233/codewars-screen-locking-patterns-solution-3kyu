@@ -26,7 +26,7 @@ const genNextSquares = (lookup, fromSquare) => {
     lookup["B"] && lookup["H"] && lookup["B"].push("H");
     lookup["H"] && lookup["B"] && lookup["H"].push("B");
     lookup["C"] && lookup["G"] && lookup["C"].push("G");
-    lookup["G"] && lookup["B"] && lookup["G"].push("B");
+    lookup["G"] && lookup["C"] && lookup["G"].push("C");
     lookup["D"] && lookup["F"] && lookup["D"].push("F");
     lookup["F"] && lookup["D"] && lookup["F"].push("D");
   }
@@ -65,7 +65,6 @@ const recursivelyCreatePermutations = (
   for (let i = 0; i < nextSquares.length; i++) {
     newPattStr = currPattStr + nextSquares[i];
     newPattLength = currPattLength + 1;
-    // console.log(newPattStr);
     if (newPattLength === length) {
       patterns.push(newPattStr);
     } else {
@@ -73,7 +72,6 @@ const recursivelyCreatePermutations = (
         lookup,
         nextSquares[i]
       );
-      // console.log(newNextSquares, "newNextSquares", newLookup, "new lookup");
       recursivelyCreatePermutations(
         newPattLength,
         newPattStr,
@@ -103,11 +101,9 @@ function countPatternsFrom(firstPoint, length) {
     patterns,
     length
   );
+  console.log(patterns, "any dupes?");
   const uniquePatterns = [...new Set(patterns)];
-  console.log(uniquePatterns.slice(0, uniquePatterns.length / 2 - 24));
-  console.log(uniquePatterns.slice(uniquePatterns.length / 2 - 24, -48));
-  console.log(uniquePatterns.slice(-48));
-  return [...new Set(patterns)].length;
+  return uniquePatterns.length;
 }
 
 module.exports = {

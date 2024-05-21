@@ -315,13 +315,13 @@ describe("countPatternsFrom", () => {
   test("pattern length of 2 returns 5 patterns for C", () => {
     expect(countPatternsFrom("C", 2)).toBe(5);
   });
-  test("pattern length of 3 returns 37 patterns for D", () => {
+  test.only("pattern length of 3 returns 37 patterns for D", () => {
     expect(countPatternsFrom("D", 3)).toBe(37);
   });
-  test.only("pattern length of 4 returns 256 patterns for E", () => {
+  test("pattern length of 4 returns 256 patterns for E", () => {
     expect(countPatternsFrom("E", 4)).toBe(256);
   });
   test.skip("pattern length of 8 returns 256 patterns for E", () => {
-    expect(countPatternsFrom("E", 5)).toBe(23280);
+    expect(countPatternsFrom("E", 8)).toBe(23280);
   });
 });
